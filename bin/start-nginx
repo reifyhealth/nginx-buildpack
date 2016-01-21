@@ -23,15 +23,6 @@ run-nginx() {
     rm -f "$psmgr"
     mkfifo "$psmgr"
 
-    # Wait for app to start.
-    if is-enabled "$NGINX_WAIT_ENABLED"; then
-        while [[ ! -e "$NGINX_WAIT_FILE" ]]; do
-            at app-waiting
-            sleep 1
-        done
-        at app-initialized
-    fi
-
     # Create logs dir. NGINX insists on creating logs/error.log even
     # though it will remain an empty file, with actual logging on stderr.
     mkdir -p logs
@@ -60,7 +51,7 @@ run-nginx() {
     declare name
     for name in "${!pids[@]}"; do
         at "kill-aux name=$name pid=${pids[$name]} signal=${signals[$name]}"
-        kill -SIGHUP "${pids[$name]}"
+        # kill -SIGHUP "${pids[$name]}"
     done
 }
 
